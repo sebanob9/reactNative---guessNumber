@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet,
         Button, TouchableWithoutFeedback,
         Keyboard, Alert, Dimensions,
@@ -14,7 +14,19 @@ const StartGameScreen = props => {
 
     const [enteredValue, setEnteredValue] = useState('');
     const [confirmed, setConfirmed] = useState(false);
-    const [selectedNumber, setSelectedNumber] = useState()
+    const [selectedNumber, setSelectedNumber] = useState();
+    const [buttonWidth, setButtonWidth] = useState(Dimensions.get('window').width / 4);
+
+    useEffect(() => {
+        const updateLayout = () => {
+            setButtonWidth(Dimensions.get('window').width / 4)
+        };
+    
+        Dimensions.addEventListener('change', updateLayout); // se lanza la funcion cuando sucede el evento 'change'
+        return () => {
+            Dimensions.removeEventListener('change', updateLayout)
+        };
+    }); // We use this hook to clean the eventlistener, we only have one listener each time.
 
     const numberInputHandler = inputText => {
         setEnteredValue(inputText.replace(/[^0-9]/g, ''))
@@ -70,8 +82,12 @@ const StartGameScreen = props => {
                                 value={enteredValue}
                                 />
                             <View style={styles.buttonsContainer}>
-                                <View style={styles.button} ><Button title="Reset" onPress={resetInputHandler} color={Colors.secondary}></Button></View>
-                                <View style={styles.button} ><Button title="Confirm" onPress={confirmInputHandler} color={Colors.primary}></Button></View>
+                                <View style={{width: buttonWidth}} >
+                                    <Button title="Reset" onPress={resetInputHandler} color={Colors.secondary}></Button>
+                                </View>
+                                <View style={{width: buttonWidth}} >
+                                    <Button title="Confirm" onPress={confirmInputHandler} color={Colors.primary}></Button>
+                                </View>
                                 
                             </View>
                         </Card>
@@ -107,10 +123,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 15
     },
-    button: {
+    /* button: {
         width: Dimensions.get('window').width / 4,
         minWidth: 90
-    },
+    }, */
     input: {
         width: 50,
         textAlign: "center"

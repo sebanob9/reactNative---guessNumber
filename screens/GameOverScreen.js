@@ -7,28 +7,28 @@ import MainButton from '../components/MainButton';
 
 const GameOverScreen = props => {
     return (
-        <ScrollView>
-            <View style={styles.screen}>
-                <HeaderTitle>Game is over</HeaderTitle>
-                <View style={styles.imageContainer}>
-                    <Image
-                    //source={{uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQbI06umDQztAb65Gx9M15bXTqU6gA_ggZTpg&usqp=CAU'}}
-                    source={require('../assets/success.png')}
-                    style={styles.image}
-                    resizeMode='cover'
-                    fadeDuration={4000}/>
+            <ScrollView>
+                <View style={styles.screen}>
+                    <HeaderTitle>Game is over</HeaderTitle>
+                    <View style={styles.imageContainer}>
+                        <Image
+                        //source={{uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQbI06umDQztAb65Gx9M15bXTqU6gA_ggZTpg&usqp=CAU'}}
+                        source={require('../assets/success.png')}
+                        style={styles.image}
+                        resizeMode='cover'
+                        fadeDuration={4000}/>
+                    </View>
+                    <View style={styles.resultContainer}>
+                        <BodyText style={styles.resultText}>
+                            Your phone needed{' '}
+                            <Text style={styles.highlight}>{props.roundsNumber}</Text> rounds
+                            to guess the number {' '}
+                            <Text style={styles.highlight}>{props.userNumber}</Text>
+                        </BodyText>
+                    </View>
+                    <MainButton onPress={props.onRestart}>Start new game</MainButton>
                 </View>
-                <View style={styles.resultContainer}>
-                    <BodyText style={styles.resultText}>
-                        Your phone needed{' '}
-                        <Text style={styles.highlight}>{props.roundsNumber}</Text> rounds
-                        to guess the number {' '}
-                        <Text style={styles.highlight}>{props.userNumber}</Text>
-                    </BodyText>
-                </View>
-                <MainButton onPress={props.onRestart}>Start new game</MainButton>
-            </View>
-        </ScrollView>
+            </ScrollView>
     )
 }
 
@@ -36,7 +36,8 @@ const styles = StyleSheet.create({
     screen: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        paddingVertical: 10
     },
     imageContainer: {
         width: Dimensions.get('window').width * 0.7,

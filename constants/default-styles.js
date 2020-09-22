@@ -1,4 +1,6 @@
-const { StyleSheet } = require("react-native");
+import colors from "./colors";
+
+const { StyleSheet, Platform } = require("react-native");
 
 export default StyleSheet.create({
     bodyText: {
@@ -8,6 +10,6 @@ export default StyleSheet.create({
     title: {
         fontFamily: 'open-sans-bold',
         fontSize: 22,
-        color: 'white'
+        color: Platform.OS === 'android' ? 'white' : colors.primary
     }
 })

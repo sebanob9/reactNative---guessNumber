@@ -8,6 +8,7 @@ import HeaderTitle from '../components/HeaderTitle';
 import MainButton from '../components/MainButton';
 import BodyText from '../components/BodyText';
 import { Ionicons } from '@expo/vector-icons';
+import  * as ScreenOrientation from 'expo-screen-orientation';
 
 const generateRandomBetween = (min, max, exclude) => {
     min= Math.ceil(min);
@@ -33,14 +34,30 @@ const generateRandomBetween = (min, max, exclude) => {
         </View>); // itemdata viene a ser toda la informacion que recibe, es el guess que en el scrollview se mapeaba. de ahi sacamos el index y el .item con la info 
 
 const GameScreen = props => {
+    //ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
     const initialGuess = generateRandomBetween(1,100, props.userChoice);// userchoice es el nombre que le ponemos al selectednumber del otro lado, el cual no permitimos que acierte a la primera
     const [currentGuess, setCurrentGuess] = useState(initialGuess);
     
     const [pastGuesses, setpastGuesses] = useState([initialGuess.toString()]); // contador de intentos
+    const [availableDeviceWidth, setAvailableDeviceWidth] = useState(Dimensions.get('window').width)
+    const [availableDeviceHeight, setAvailableDeviceHeight] = useState(Dimensions.get('window').height)
+
     const currentLow = useRef(1);
     const currentHigh = useRef(100);
 
     const { userChoice, onGameOver } = props; // desestructuracion de objetos
+
+    useEffect( () => {
+        const updateLayout = () => {
+            setAvailableDeviceWidth(Dimensions.get('window').width);
+            setAvailableDeviceHeight(Dimensions.get('window').height)
+        };
+        Dimensions.addEventListener('change', updateLayout);
+
+        return () => {
+            Dimensions.removeEventListener('change', updateLayout);
+        }
+    });
 
     useEffect( () => {
         if (currentGuess === userChoice) {
@@ -73,9 +90,38 @@ const GameScreen = props => {
 
     // condicional --> Indicamos que si el ancho es menor de 350, pase a usar el estilo BIG en bez de listContainer, para eso creamos la variable containerStyle y la metemos en el styles del tag
     let containerStyle = styles.listContainer;
-    if ( Dimensions.get('window').width < 350) {
+    if ( availableDeviceWidth < 350) {
         containerStyle = styles.listContainerBig
     };
+
+    if(availableDeviceHeight < 500) {
+        return (
+            <View style={styles.screen}>
+            <HeaderTitle>Opponent's Guess</HeaderTitle>
+            <View style={styles.controls}>
+                <MainButton style={styles.button} onPress={nextGuessHandler.bind(this, 'lower')}>
+                    <Ionicons name='md-remove' size={24} color='white'/>
+                </MainButton>
+                <NumberContainer>{currentGuess}</NumberContainer>  
+                <MainButton style={styles.button} onPress={nextGuessHandler.bind(this, 'greater')}>
+                    <Ionicons name='md-add' size={24} color='white'/>
+                </MainButton>
+            </View>
+            <View style={containerStyle}>
+                {/* <ScrollView contentContainerStyle={styles.list}>
+                    {pastGuesses.map((guess, index) => renderList(guess, pastGuesses.length - index))}
+                </ScrollView> */}
+                <FlatList
+                    keyExtractor={(item)=> item}
+                    data={pastGuesses}
+                    renderItem={renderList.bind(this, pastGuesses.length)}
+                    contentContainerStyle={styles.list}>
+                        {/* pastGuesses.length es el primer argumento que se envia */}
+                </FlatList> 
+            </View>
+        </View>
+        )
+    }
 
     return (
         <View style={styles.screen}>
@@ -101,7 +147,6 @@ const GameScreen = props => {
                         {/* pastGuesses.length es el primer argumento que se envia */}
                 </FlatList> 
             </View>
-           
         </View>
     )
 } 
@@ -122,6 +167,12 @@ const styles = StyleSheet.create({
     },
     button: {
         borderRadius: 40
+    },
+    controls: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: '80%',
+        alignItems: 'center'
     },
     list: {
         flexGrow: 1, // se usa para que el ultimo resultado se pueda mantener cuando hacemos scroll
